@@ -1,0 +1,297 @@
+{
+  "title": "Movies Analytics",
+  "uid": "movies-analytics",
+  "schemaVersion": 38,
+  "version": 1,
+  "editable": true,
+  "graphTooltip": 0,
+  "tags": ["movies"],
+  "time": { "from": "now-1y", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "annotations": { "list": [] },
+  "links": [],
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total de Filmes",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM fact_movies",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "blue" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Receita Total (USD)",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT SUM(revenue) AS value FROM fact_movies WHERE revenue > 0",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 0,
+          "color": { "mode": "fixed", "fixedColor": "green" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Média de Avaliação",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND(AVG(vote_average)::numeric, 2) AS value FROM fact_movies WHERE vote_average > 0",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "color": { "mode": "fixed", "fixedColor": "orange" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Total de Idiomas",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS value FROM dim_language",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "purple" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": null }] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "barchart",
+      "title": "Top 10 Filmes por Lucro",
+      "description": "Filmes com maior lucro (receita - orçamento)",
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 10 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT title, profit FROM fact_movies WHERE profit IS NOT NULL ORDER BY profit DESC LIMIT 10",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "fillOpacity": 80,
+        "tooltipMode": "single",
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "title" },
+            "properties": [{ "id": "custom.width", "value": 300 }]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": "barchart",
+      "title": "Receita Total por Idioma",
+      "description": "Soma da receita agrupada pelo idioma original do filme",
+      "gridPos": { "x": 0, "y": 14, "w": 14, "h": 10 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT d.language_code, SUM(f.revenue) AS receita\nFROM fact_movies f\nJOIN dim_language d ON f.dim_language_id = d.id\nWHERE f.revenue > 0\nGROUP BY d.language_code\nORDER BY receita DESC\nLIMIT 15",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "orientation": "vertical",
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "fillOpacity": 80,
+        "xTickLabelRotation": -30,
+        "tooltipMode": "single",
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "barchart",
+      "title": "Média de Avaliação por Idioma (min. 50 filmes)",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 9 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT d.language_code, ROUND(AVG(f.vote_average)::numeric, 2) AS media_avaliacao\nFROM fact_movies f\nJOIN dim_language d ON f.dim_language_id = d.id\nWHERE f.vote_average > 0\nGROUP BY d.language_code\nHAVING COUNT(*) >= 50\nORDER BY media_avaliacao DESC",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "orientation": "vertical",
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "fillOpacity": 80,
+        "xTickLabelRotation": -30,
+        "tooltipMode": "single",
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "min": 0,
+          "max": 10,
+          "color": { "mode": "continuous-GrYlRd" }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 10,
+      "type": "table",
+      "title": "Top 10 Filmes por Popularidade",
+      "gridPos": { "x": 0, "y": 33, "w": 24, "h": 8 },
+      "datasource": { "type": "postgres", "uid": "movies-postgres" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "postgres", "uid": "movies-postgres" },
+          "rawQuery": true,
+          "rawSql": "SELECT\n  title AS \"Título\",\n  ROUND(popularity::numeric, 1) AS \"Popularidade\",\n  ROUND(vote_average::numeric, 2) AS \"Avaliação\",\n  vote_count AS \"Votos\",\n  EXTRACT(YEAR FROM release_date)::int AS \"Ano\",\n  ROUND((revenue / 1000000.0)::numeric, 1) AS \"Receita (M USD)\"\nFROM fact_movies\nWHERE popularity IS NOT NULL\nORDER BY popularity DESC\nLIMIT 10",
+          "format": "table"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "footer": { "show": false, "reducer": ["sum"] }
+      },
+      "fieldConfig": {
+        "defaults": { "custom": { "align": "auto" } },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Popularidade" },
+            "properties": [
+              { "id": "custom.displayMode", "value": "gradient-gauge" },
+              { "id": "color", "value": { "mode": "continuous-BlPu" } }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Avaliação" },
+            "properties": [
+              { "id": "custom.displayMode", "value": "color-background" },
+              { "id": "thresholds", "value": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "yellow", "value": 6 },
+                  { "color": "green", "value": 7.5 }
+                ]
+              }},
+              { "id": "color", "value": { "mode": "thresholds" } }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

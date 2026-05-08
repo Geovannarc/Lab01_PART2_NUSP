@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python -m json.tool)",
+      "PowerShell(docker exec datadocs find /usr/share/nginx/html -maxdepth 4 2>&1)",
+      "PowerShell(docker run --rm -v lab02_part1_nusp_datadocs:/data alpine find /data -maxdepth 5 2>&1)"
+    ]
+  }
+}

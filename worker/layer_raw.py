@@ -4,6 +4,7 @@ from datetime import datetime
 from log_utils import get_logger, calculate_latency
 from datetime import datetime
 from pathlib import Path
+from data_quality.data_validation import DataValidation
 
 class RawLayerProcessor:
     def __init__(self):
@@ -25,6 +26,13 @@ class RawLayerProcessor:
         print(f"Full input path: {full_input_path}")
 
         df = pd.read_csv(full_input_path, engine="pyarrow")
+
+        validator = DataValidation(suite_name="raw_suite", checkpoint_name="raw_checkpoint")
+        validation_result = validator.validate(df)
+        if not validation_result["success"]:
+            self.logger.warning(f"Data quality issues detected: {validation_result}")
+        else:
+            print("Data validation passed successfully")
 
         now = datetime.now()
         year = f"{now.year}"

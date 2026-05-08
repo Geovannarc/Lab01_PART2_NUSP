@@ -6,7 +6,7 @@ services:
     container_name: postgres_database
     restart: always
     environment:
-      POSTGRES_DB: worker_db
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -15,21 +15,51 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   worker:
-    build: 
+    build:
       context: .
-      dockerfile: worker/Dockerfile
+      dockerfile: Dockerfile
     container_name: worker
-    restart: always
+    restart: on-failure
     depends_on:
       - db
     environment:
-      POSTGRES_DB: worker_db
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DB_HOST: db
       DB_PORT: 5432
       RAW_INPUT_PATH: /app/worker
       RAW_OUTPUT_PATH: /app/worker
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/postgres
+    volumes:
+      - datadocs:/app/gx/uncommitted/data_docs
+
+  datadocs:
+    image: nginx:alpine
+    container_name: datadocs
+    ports:
+      - "8080:80"
+    volumes:
+      - datadocs:/usr/share/nginx/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - db
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/movies_dashboard.json
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
 
 volumes:
   postgres_data:
+  grafana_data:
+  datadocs:

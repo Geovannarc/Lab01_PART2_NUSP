@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+  - name: PostgreSQL
+    uid: movies-postgres
+    type: postgres
+    url: db:5432
+    user: postgres
+    secureJsonData:
+      password: postgres
+    jsonData:
+      database: postgres
+      sslmode: disable
+      postgresVersion: 1500
+      maxOpenConns: 10
+      maxIdleConns: 10
+      connMaxLifetime: 14400
+    isDefault: true
+    editable: true
