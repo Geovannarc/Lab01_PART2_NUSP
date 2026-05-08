@@ -137,7 +137,7 @@ O Great Expectations gera um relatório HTML estático com os resultados de toda
 
 3. Faça login com as credenciais:
    - **Usuário:** `admin`
-   - **Senha:** `admin`
+   - **Senha:** `admin1`
 
 4. O dashboard **"Movies Analytics"** abre automaticamente como página inicial.
 
